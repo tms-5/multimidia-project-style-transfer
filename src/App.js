@@ -15,20 +15,22 @@ import estilo3 from "./img/estilo-3.jpg";
 import estilo4 from "./img/estilo-4.jpg";
 import estilo5 from "./img/estilo-5.jpg";
 import estilo6 from "./img/estilo-6.jpg";
+import output1 from "./img/output-1.png";
 import BusyIndicator from "./BusyIndicator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloud, faCamera, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloud,
+  faCamera,
+  faUpload,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import Webcam from "react-webcam";
-//const inputFile = useRef(null);
-
-// const onButtonClick = () => {
-//   inputFile.current.click();
-// };
 
 function App() {
   const [image, setImage] = useState(cachorro1);
-  const [style, setStyle] = useState(estilo1);
+  const [style, setStyle] = useState(estilo5);
   const [webcam, setWebcam] = useState(false);
+  const [output, setOutput] = useState();
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -102,21 +104,21 @@ function App() {
                   <Col>
                     <img
                       src={cachorro1}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setImage(cachorro1)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={cachorro2}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setImage(cachorro2)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={cachorro3}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setImage(cachorro3)}
                     />
                   </Col>
@@ -125,21 +127,21 @@ function App() {
                   <Col>
                     <img
                       src={cachorro4}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setImage(cachorro4)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={cachorro5}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setImage(cachorro5)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={cachorro6}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setImage(cachorro6)}
                     />
                   </Col>
@@ -201,22 +203,22 @@ function App() {
                 <Row className="d-flex jc-space-around">
                   <Col>
                     <img
-                      src={estilo1}
-                      className="thumbnail crop-fit"
-                      onClick={() => setStyle(estilo1)}
+                      src={estilo5}
+                      className="thumbnail crop-fit c-pointer"
+                      onClick={() => setStyle(estilo5)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={estilo2}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setStyle(estilo2)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={estilo3}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setStyle(estilo3)}
                     />
                   </Col>
@@ -225,24 +227,37 @@ function App() {
                   <Col>
                     <img
                       src={estilo4}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setStyle(estilo4)}
                     />
                   </Col>
                   <Col>
                     <img
-                      src={estilo5}
-                      className="thumbnail crop-fit"
-                      onClick={() => setStyle(estilo5)}
+                      src={estilo1}
+                      className="thumbnail crop-fit c-pointer"
+                      onClick={() => setStyle(estilo1)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={estilo6}
-                      className="thumbnail crop-fit"
+                      className="thumbnail crop-fit c-pointer"
                       onClick={() => setStyle(estilo6)}
                     />
                   </Col>
+                </Row>
+                <Row>
+                  <div className="input-group">
+                    <div className="custom-file">
+                      <label
+                        className="custom-file-label"
+                        onClick={() => setOutput(output1)}
+                      >
+                        <FontAwesomeIcon icon={faCheck} className="mr-1" />
+                        Selec this style
+                      </label>
+                    </div>
+                  </div>
                 </Row>
               </div>
             </div>
@@ -251,7 +266,7 @@ function App() {
             <div className="box">
               <div className="description">
                 <h2>Output</h2>
-                <BusyIndicator />
+                {output ? <img src={output} /> : <BusyIndicator />}
               </div>
             </div>
           </Col>
