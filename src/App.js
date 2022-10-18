@@ -25,6 +25,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import Webcam from "react-webcam";
+import API from "./API.js";
 
 function App() {
   const [image, setImage] = useState(cachorro1);
@@ -45,6 +46,34 @@ function App() {
     height: 300,
     facingMode: "user",
   };
+
+  const submit = () => {
+    // let imgArray = new Array();
+    // imgArray[0] = new Image();
+    // imgArray[0].src = image;
+
+    fetch(image.src)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          console.log(image.src);
+          console.log(reader.result);
+          API.post("/vector_image", {
+            num: 1,
+            img: new Int8Array(reader.result),
+          })
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        };
+        reader.readAsDataURL(blob);
+      });
+  };
+
   return (
     <div className="App">
       <div className="wrapper d-flex">
@@ -251,7 +280,7 @@ function App() {
                     <div className="custom-file">
                       <label
                         className="custom-file-label"
-                        onClick={() => setOutput(output1)}
+                        onClick={() => submit()}
                       >
                         <FontAwesomeIcon icon={faCheck} className="mr-1" />
                         Selec this style
