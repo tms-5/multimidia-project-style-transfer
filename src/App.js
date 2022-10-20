@@ -8,31 +8,29 @@ import cachorro2 from "./img/cachorro-feliz.jpg";
 import cachorro3 from "./img/cachorro-fofo.png";
 import cachorro4 from "./img/cachorro-golden.jpg";
 import cachorro5 from "./img/cachorro-numanice.jpg";
-import cachorro6 from "./img/cachorro-sorvete.jpg";
 import estilo1 from "./img/estilo-1.jpg";
 import estilo2 from "./img/estilo-2.jpg";
-import estilo3 from "./img/estilo-3.jpg";
 import estilo4 from "./img/estilo-4.jpg";
 import estilo5 from "./img/estilo-5.jpg";
-import estilo6 from "./img/estilo-6.jpg";
-import output1 from "./img/output-1.png";
 import BusyIndicator from "./BusyIndicator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCloud,
   faCamera,
-  faUpload,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import Webcam from "react-webcam";
 import API from "./API.js";
+import imageToBase64 from "image-to-base64/browser";
 
 function App() {
   const [image, setImage] = useState(cachorro1);
   const [style, setStyle] = useState(estilo5);
   const [webcam, setWebcam] = useState(false);
   const [output, setOutput] = useState();
+  const [loading, setLoading] = useState(false);
 
+  // upar arquivo do cliente
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setImage(undefined);
@@ -41,43 +39,39 @@ function App() {
     setImage(URL.createObjectURL(e.target.files[0]));
   };
 
+  // configurações da webcam
   const videoConstraints = {
     width: 300,
     height: 300,
     facingMode: "user",
   };
 
+  // mandar para o servidor a imagem e o estilo escolhido 
   const submit = () => {
-    // let imgArray = new Array();
-    // imgArray[0] = new Image();
-    // imgArray[0].src = image;
-
-    fetch(image.src)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          console.log(image.src);
-          console.log(reader.result);
-          API.post("/vector_image", {
-            num: 1,
-            img: new Int8Array(reader.result),
+    imageToBase64(image) // Path to the image
+      .then((response) => {
+        API.post("/vector_image", {
+          num: 1,
+          img: "data:image/jpeg;base64," + response,
+        })
+          .then((res) => {
+            setLoading(false);
+            res.data && setOutput(res.data);
           })
-            .then((res) => {
-              console.log(res);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        };
-        reader.readAsDataURL(blob);
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        return error;
       });
   };
 
   return (
     <div className="App">
       <div className="wrapper d-flex">
-        <h2>Fast Style Transfer Example</h2>
+        <h2>Style Transfer Example</h2>
         <Row className="w-100 d-flex jc-space-around">
           <Col className="col-3">
             <div className="box">
@@ -144,34 +138,20 @@ function App() {
                       onClick={() => setImage(cachorro2)}
                     />
                   </Col>
-                  <Col>
-                    <img
-                      src={cachorro3}
-                      className="thumbnail crop-fit c-pointer"
-                      onClick={() => setImage(cachorro3)}
-                    />
-                  </Col>
                 </Row>
                 <Row className="d-flex jc-space-around">
                   <Col>
                     <img
                       src={cachorro4}
                       className="thumbnail crop-fit c-pointer"
-                      onClick={() => setImage(cachorro4)}
+                      onClick={() => setImage(cachorro3)}
                     />
                   </Col>
                   <Col>
                     <img
                       src={cachorro5}
                       className="thumbnail crop-fit c-pointer"
-                      onClick={() => setImage(cachorro5)}
-                    />
-                  </Col>
-                  <Col>
-                    <img
-                      src={cachorro6}
-                      className="thumbnail crop-fit c-pointer"
-                      onClick={() => setImage(cachorro6)}
+                      onClick={() => setImage(cachorro4)}
                     />
                   </Col>
                 </Row>
@@ -206,7 +186,7 @@ function App() {
                     </div>
                   </Col>
                 </Row>
-                <Row>
+                {/* <Row>
                   <div className="input-group">
                     <div className="custom-file">
                       <label className="custom-file-label">
@@ -220,7 +200,7 @@ function App() {
                       </p>
                     </div>
                   </div>
-                </Row>
+                </Row> */}
               </div>
             </div>
           </Col>
@@ -244,13 +224,6 @@ function App() {
                       onClick={() => setStyle(estilo2)}
                     />
                   </Col>
-                  <Col>
-                    <img
-                      src={estilo3}
-                      className="thumbnail crop-fit c-pointer"
-                      onClick={() => setStyle(estilo3)}
-                    />
-                  </Col>
                 </Row>
                 <Row className="d-flex jc-space-around">
                   <Col>
@@ -267,20 +240,17 @@ function App() {
                       onClick={() => setStyle(estilo1)}
                     />
                   </Col>
-                  <Col>
-                    <img
-                      src={estilo6}
-                      className="thumbnail crop-fit c-pointer"
-                      onClick={() => setStyle(estilo6)}
-                    />
-                  </Col>
                 </Row>
                 <Row>
                   <div className="input-group">
                     <div className="custom-file">
                       <label
                         className="custom-file-label"
-                        onClick={() => submit()}
+                        onClick={() => {
+                          submit();
+                          setLoading(true);
+                          setOutput("");
+                        }}
                       >
                         <FontAwesomeIcon icon={faCheck} className="mr-1" />
                         Selec this style
@@ -295,7 +265,8 @@ function App() {
             <div className="box">
               <div className="description">
                 <h2>Output</h2>
-                {output ? <img src={output} /> : <BusyIndicator />}
+                {loading && <BusyIndicator />}
+                {output && <img src={output} className="crop-fit main-image" />}
               </div>
             </div>
           </Col>
